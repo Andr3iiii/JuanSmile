@@ -1,6 +1,5 @@
 <template>
   <div class="app-container">
-    <!-- Header -->
     <header class="header">
       <div class="header-right">
         <div class="search-bar">
@@ -33,7 +32,6 @@
       </div>
     </header>
 
-    <!-- Content -->
     <main class="content">
       <div class="large-card">
         <div class="header-bar">
@@ -71,7 +69,6 @@
       </div>
     </main>
 
-    <!-- Booking Modal -->
     <div v-if="showBookingModal" class="modal-overlay">
       <div class="modal-content">
         <Booking
@@ -87,7 +84,6 @@
 import { ref, computed } from "vue";
 import Booking from "./booking.vue";
 
-// Static service list with image paths
 const services = [
   {
     title: "EXTRACTION/BUNOT",
@@ -158,7 +154,7 @@ const filteredServices = computed(() =>
 );
 
 const openBookingModal = (serviceTitle) => {
-  selectedService.value = serviceTitle; // Pass the selected service to Booking.vue
+  selectedService.value = serviceTitle;
   showBookingModal.value = true;
 };
 
@@ -168,7 +164,6 @@ const closeBookingModal = () => {
 </script>
 
 <style scoped>
-/* Layout */
 .app-container {
   height: 100vh;
   display: flex;
@@ -178,7 +173,6 @@ const closeBookingModal = () => {
   background-color: #f9f9f9;
 }
 
-/* Header */
 .header {
   background-color: white;
   padding: 16px 24px;
@@ -247,14 +241,12 @@ const closeBookingModal = () => {
   align-self: stretch;
 }
 
-/* Content */
 .content {
   flex: 1;
   overflow-y: auto;
   padding: 24px;
 }
 
-/* Card Section */
 .large-card {
   background-image: url("../assets/mainbg.png");
   background-size: cover;
@@ -284,7 +276,6 @@ const closeBookingModal = () => {
   gap: 12px;
 }
 
-/* Cards */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -372,7 +363,6 @@ const closeBookingModal = () => {
   background-color: #eab308;
 }
 
-/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;

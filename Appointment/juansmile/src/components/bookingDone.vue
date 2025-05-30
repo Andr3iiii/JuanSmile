@@ -22,7 +22,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 const closeAndNavigate = () => {
-  router.push("/appointment"); // Navigate back to Appointment.vue
+  router.push("/appointment");
 };
 </script>
 
@@ -38,7 +38,6 @@ const closeAndNavigate = () => {
   justify-content: center;
   align-items: center;
   z-index: 999;
-  /* REMOVE pointer-events: none; */
 }
 
 .popup {
@@ -50,7 +49,7 @@ const closeAndNavigate = () => {
   text-align: center;
   font-family: Arial, sans-serif;
   color: #000;
-  pointer-events: auto; /* Allow interactions with the popup */
+  pointer-events: auto;
 }
 
 button {

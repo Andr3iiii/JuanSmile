@@ -2,7 +2,6 @@
   <div class="appointment-form">
     <h2>BOOK AN APPOINTMENT</h2>
     <form @submit.prevent="submitForm">
-      <!-- Name fields -->
       <div class="form-group">
         <input
           v-model="form.firstName"
@@ -21,13 +20,12 @@
           required
         />
       </div>
-
-      <!-- Contact fields -->
       <div class="form-group">
         <input
           v-model="form.phone"
           type="text"
           placeholder="Phone*"
+          maxlength="11"
           :class="{ invalid: !validPhone(form.phone) && touched.phone }"
           @input="touched.phone = true"
           required
@@ -41,8 +39,6 @@
           required
         />
       </div>
-
-      <!-- Date & Time -->
       <div class="form-group">
         <input
           v-model="form.date"
@@ -53,8 +49,6 @@
         />
         <input v-model="form.time" type="time" required />
       </div>
-
-      <!-- Service Dropdown -->
       <div class="form-group">
         <select
           v-model="form.service"
@@ -67,32 +61,22 @@
           </option>
         </select>
       </div>
-
-      <!-- Buttons Row -->
       <div class="button-row">
         <button type="submit">SUBMIT</button>
         <button type="button" @click="$emit('close')">CANCEL</button>
       </div>
     </form>
-
-    <!-- Booking Confirmation Modal -->
     <BookingDone v-if="showConfirmation" @close="closeConfirmation" />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch, defineProps, defineEmits } from "vue";
+import { ref, watch, defineProps, defineEmits } from "vue";
 import BookingDone from "./bookingDone.vue";
 
-// Props
-const props = defineProps({
-  selectedService: String,
-});
-
-// Emit
+const props = defineProps({ selectedService: String });
 const emit = defineEmits(["close"]);
 
-// Form state
 const form = ref({
   firstName: "",
   lastName: "",
@@ -103,7 +87,6 @@ const form = ref({
   service: "",
 });
 
-// Touched state
 const touched = ref({
   firstName: false,
   lastName: false,
@@ -111,7 +94,6 @@ const touched = ref({
   email: false,
 });
 
-// Available services
 const services = [
   "EXTRACTION/BUNOT",
   "RESTORATION/PASTA",
@@ -123,7 +105,6 @@ const services = [
   "SELF LIGATING BRACES",
 ];
 
-// Watch for prop change and set service automatically
 watch(
   () => props.selectedService,
   (newVal) => {
@@ -137,45 +118,53 @@ watch(
   { immediate: true }
 );
 
-// Date constraints
 const today = new Date();
-const minDate = today.toISOString().split("T")[0];
-const maxDate = new Date(
-  today.getFullYear(),
-  today.getMonth(),
-  today.getDate() + 30
-)
-  .toISOString()
-  .split("T")[0];
+const threeMonthsLater = new Date(today);
+threeMonthsLater.setMonth(today.getMonth() + 3);
 
-// Validation functions
-const validName = (value) => /^[A-Za-z\s]+$/.test(value);
-const validPhone = (value) => /^[0-9]+$/.test(value);
+const formatDate = (date) => date.toISOString().split("T")[0];
+const minDate = formatDate(today);
+const maxDate = formatDate(threeMonthsLater);
+
+const validName = (value) => /^[A-Za-z\s]+$/.test(value.trim());
+const validPhone = (value) => /^\d{11}$/.test(value.trim());
 const validEmail = (value) =>
   /^[^@\s]+@(gmail\.com|yahoo\.com)$/.test(value.trim());
 
-// Confirmation modal state
 const showConfirmation = ref(false);
 
-// Form submission
 const submitForm = () => {
-  if (
-    validName(form.value.firstName) &&
-    validName(form.value.lastName) &&
-    validPhone(form.value.phone) &&
-    validEmail(form.value.email)
-  ) {
-    console.log("Form submitted:", form.value);
-    showConfirmation.value = true;
+  Object.keys(touched.value).forEach((key) => (touched.value[key] = true));
 
-    // Auto close modal
-    setTimeout(() => {
-      showConfirmation.value = false;
-      emit("close");
-    }, 1000);
-  } else {
+  const selectedDate = new Date(form.value.date);
+  const todayOnlyDate = new Date(today.toDateString());
+  const maxOnlyDate = new Date(threeMonthsLater.toDateString());
+
+  if (
+    !validName(form.value.firstName) ||
+    !validName(form.value.lastName) ||
+    !validPhone(form.value.phone) ||
+    !validEmail(form.value.email) ||
+    !form.value.service ||
+    !form.value.date ||
+    !form.value.time
+  ) {
     alert("Please correct the errors in the form.");
+    return;
   }
+
+  if (selectedDate < todayOnlyDate || selectedDate > maxOnlyDate) {
+    alert("Date must be between today and 3 months from now.");
+    return;
+  }
+
+  console.log("Form submitted:", form.value);
+  showConfirmation.value = true;
+
+  setTimeout(() => {
+    showConfirmation.value = false;
+    emit("close");
+  }, 1000);
 };
 
 const closeConfirmation = () => {
